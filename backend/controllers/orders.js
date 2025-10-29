@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const sendEmail = require('../utils/sendEmail');
 
 // @desc    Create new order
 // @route   POST /api/orders/order/new
@@ -26,6 +27,38 @@ exports.newOrder = async (req, res, next) => {
       paymentInfo,
       user: req.user._id
     });
+
+    const message = `Dear ${req.user.name},
+
+Thank you for your order!
+
+Order ID: ${order._id}
+Total Amount: $${totalPrice.toFixed(2)}
+
+Your order has been successfully placed and is now being processed.
+
+You can track your order status by visiting the "My Orders" page in your account.
+
+Shipping Address:
+${shippingInfo.name}
+${shippingInfo.address}
+${shippingInfo.city}, ${shippingInfo.state} ${shippingInfo.zipCode}
+${shippingInfo.country}
+
+Thank you for shopping with us!
+
+Best regards,
+May Store Team`;
+
+    try {
+      await sendEmail({
+        email: req.user.email,
+        subject: 'Order Confirmation - May Store',
+        message
+      });
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError.message);
+    }
 
     res.status(201).json({
       success: true,

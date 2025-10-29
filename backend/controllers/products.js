@@ -81,9 +81,10 @@ exports.getProducts = async (req, res, next) => {
       .sort(sortBy)
       .skip(skip)
       .limit(resPerPage)
-      .populate('reviews.user', 'name');
+      .maxTimeMS(5000)
+      .lean();
 
-    const totalProducts = await Product.countDocuments(query);
+    const totalProducts = await Product.countDocuments(query).maxTimeMS(5000);
     const totalPages = Math.ceil(totalProducts / resPerPage);
 
     res.status(200).json({
