@@ -1,5 +1,8 @@
 const sendEmail = async (options) => {
   // Use SendGrid in production, Nodemailer in development
+  console.log('SENDGRID_API_KEY exists?', !!process.env.SENDGRID_API_KEY);
+  console.log('Sending email to:', options.email);
+  
   if (process.env.SENDGRID_API_KEY) {
     const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
