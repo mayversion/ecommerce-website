@@ -39,6 +39,11 @@ export const login = (email, password) => async (dispatch) => {
 
     const { data } = await axios.post('/api/auth/login', { email, password }, config);
 
+    // Store token in localStorage for cross-domain authentication
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+
     dispatch({
       type: LOGIN_SUCCESS,
       payload: data.user
@@ -64,6 +69,11 @@ export const register = (userData) => async (dispatch) => {
     };
 
     const { data } = await axios.post('/api/auth/register', userData, config);
+
+    // Store token in localStorage for cross-domain authentication
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
 
     dispatch({
       type: REGISTER_SUCCESS,
@@ -102,6 +112,9 @@ export const loadUser = () => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   try {
     await axios.get('/api/auth/logout');
+
+    // Remove token from localStorage
+    localStorage.removeItem('token');
 
     dispatch({
       type: LOGOUT_SUCCESS
